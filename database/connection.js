@@ -1,7 +1,7 @@
 /**
  * Conexión Sequelize + SQLite.
  * Ruta del archivo: carpeta database del proyecto en desarrollo;
- * en Electron empaquetado conviene usar app.getPath('userData') (comentado abajo).
+ * en Electron empaquetado conviene usar app.getPath('userData') (comentadoabajo).
  */
 const path = require('path');
 const { Sequelize } = require('sequelize');
