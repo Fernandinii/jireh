@@ -1,0 +1,17 @@
+<% const nav = typeof activeNav !== 'undefined' ? activeNav : ''; %>
+<aside class="app-sidebar bg-primary text-white d-flex flex-column">
+  <div class="p-3 border-bottom border-light border-opacity-25">
+    <a href="/dashboard" class="text-white text-decoration-none fw-bold fs-5">Jireh POS</a>
+    <div class="small text-white-50 mt-1">Punto de venta</div>
+  </div>
+  <nav class="nav flex-column p-3 gap-1 flex-grow-1">
+    <a class="nav-link <%= nav === 'dashboard' ? 'active' : '' %>" href="/dashboard">Inicio</a>
+    <a class="nav-link <%= nav === 'productos' ? 'active' : '' %>" href="/productos">Productos</a>
+    <a class="nav-link <%= nav === 'ventas' ? 'active' : '' %>" href="/ventas">Ventas</a>
+    <a class="nav-link <%= nav === 'clientes' ? 'active' : '' %>" href="/clientes">Clientes</a>
+    <a class="nav-link <%= nav === 'proveedores' ? 'active' : '' %>" href="/proveedores">Proveedores</a>
+  </nav>
+  <div class="p-3 border-top border-light border-opacity-25 small text-white-50">
+    Sesión: <%= currentUser ? currentUser.nombre : '' %>
+  </div>
+</aside>

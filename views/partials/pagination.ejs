@@ -1,0 +1,42 @@
+<%#
+  Parámetro: pagination = { page, perPage, total, totalPages, q }
+  Parámetro: basePath = ruta base (ej. '/productos')
+%>
+<% const p = pagination || { page: 1, perPage: 25, total: 0, totalPages: 1, q: '' }; %>
+<% function pagHref(pageNum) {
+  const params = new URLSearchParams();
+  if (p.q) params.set('q', p.q);
+  params.set('perPage', String(p.perPage));
+  params.set('page', String(pageNum));
+  return basePath + '?' + params.toString();
+} %>
+<% const windowSize = 5;
+   let start = Math.max(1, p.page - 2);
+   let end = Math.min(p.totalPages, start + windowSize - 1);
+   if (end - start < windowSize - 1) start = Math.max(1, end - windowSize + 1);
+%>
+<nav class="d-flex flex-wrap align-items-center justify-content-between gap-2 pt-2 border-top" aria-label="Paginación">
+  <div class="small text-muted">
+    <% if (p.total === 0) { %>
+      Sin resultados
+    <% } else { %>
+      Mostrando <strong><%= (p.page - 1) * p.perPage + 1 %></strong>–<strong><%= Math.min(p.page * p.perPage, p.total) %></strong>
+      de <strong><%= p.total %></strong>
+    <% } %>
+  </div>
+  <% if (p.totalPages > 1) { %>
+  <ul class="pagination pagination-sm mb-0 flex-wrap">
+    <li class="page-item <%= p.page <= 1 ? 'disabled' : '' %>">
+      <a class="page-link" href="<%= pagHref(p.page - 1) %>">Anterior</a>
+    </li>
+    <% for (let n = start; n <= end; n++) { %>
+    <li class="page-item <%= n === p.page ? 'active' : '' %>">
+      <a class="page-link" href="<%= pagHref(n) %>"><%= n %></a>
+    </li>
+    <% } %>
+    <li class="page-item <%= p.page >= p.totalPages ? 'disabled' : '' %>">
+      <a class="page-link" href="<%= pagHref(p.page + 1) %>">Siguiente</a>
+    </li>
+  </ul>
+  <% } %>
+</nav>

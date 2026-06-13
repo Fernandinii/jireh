@@ -1,0 +1,60 @@
+<%- include('../partials/layout-app-start', { title: 'Inicio', activeNav: 'dashboard', headerSubtitle: 'Panel principal' }) %>
+<%- include('../partials/flash') %>
+
+<h1 class="h4 mb-3">Bienvenido</h1>
+<p class="text-muted">Sesión activa como <strong><%= currentUser.rol %></strong>.</p>
+
+<% if (esAdmin) { %>
+  <div class="alert alert-info py-2 small">
+    Como <strong>administrador</strong> puede gestionar catálogos y configuración desde el menú lateral.
+  </div>
+<% } else { %>
+  <div class="alert alert-secondary py-2 small">
+    Rol <strong>vendedor</strong>: use <strong>Ventas</strong> para la caja y el menú lateral para consultar catálogos.
+  </div>
+<% } %>
+
+<div class="row g-3 mt-2">
+  <div class="col-md-6 col-lg-3">
+    <a href="/productos" class="text-decoration-none">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="h6 text-primary">Productos</h2>
+          <p class="small text-muted mb-0">Inventario y precios</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <a href="/ventas" class="text-decoration-none">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="h6 text-primary">Ventas</h2>
+          <p class="small text-muted mb-0">Caja / POS</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <a href="/clientes" class="text-decoration-none">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="h6 text-primary">Clientes</h2>
+          <p class="small text-muted mb-0">Fiado y abonos</p>
+        </div>
+      </div>
+    </a>
+  </div>
+  <div class="col-md-6 col-lg-3">
+    <a href="/proveedores" class="text-decoration-none">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <h2 class="h6 text-primary">Proveedores</h2>
+          <p class="small text-muted mb-0">Contactos</p>
+        </div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<%- include('../partials/layout-app-end') %>

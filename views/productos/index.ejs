@@ -1,0 +1,80 @@
+<%- include('../partials/layout-app-start', { title: 'Productos', activeNav: 'productos', headerSubtitle: 'Catálogo e inventario' }) %>
+<%- include('../partials/flash') %>
+
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <h1 class="h4 mb-0">Productos</h1>
+  <span class="badge bg-secondary">Paginación: máx. <%= pagination.perPage %> por página</span>
+</div>
+
+<form class="row g-2 align-items-end mb-3" method="get" action="/productos">
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <label class="form-label small text-muted mb-0" for="q">Buscar (nombre o código)</label>
+    <input class="form-control form-control-sm" id="q" name="q" type="search"
+      value="<%= pagination.q %>" placeholder="Ej. arroz o 750..." autocomplete="off" />
+  </div>
+  <div class="col-auto">
+    <label class="form-label small text-muted mb-0" for="perPage">Por página</label>
+    <select class="form-select form-select-sm" id="perPage" name="perPage" onchange="this.form.submit()">
+      <% [10, 25, 50, 100].forEach(function (n) { %>
+        <option value="<%= n %>" <%= pagination.perPage === n ? 'selected' : '' %>><%= n %></option>
+      <% }); %>
+    </select>
+  </div>
+  <div class="col-auto">
+    <input type="hidden" name="page" value="1" />
+    <button type="submit" class="btn btn-sm btn-primary">Buscar</button>
+    <% if (pagination.q) { %>
+      <a href="/productos?perPage=<%= pagination.perPage %>" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+    <% } %>
+  </div>
+</form>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="productos-table-wrap table-sticky-wrap">
+      <table class="table table-hover table-sm mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th scope="col">Nombre</th>
+            <th scope="col">Código</th>
+            <th scope="col" class="text-end">Precio compra</th>
+            <th scope="col" class="text-end">Precio venta</th>
+            <th scope="col" class="text-end">Stock</th>
+            <th scope="col" class="text-end">Mín.</th>
+            <th scope="col">Proveedor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!productos.length) { %>
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">No hay productos que coincidan.</td>
+          </tr>
+          <% } %>
+          <% productos.forEach(function (prod) {
+               const pc = Number(prod.precio_compra);
+               const pv = Number(prod.precio_venta);
+          %>
+          <tr>
+            <td><%= prod.nombre %></td>
+            <td><code class="small"><%= prod.codigo_barras || '—' %></code></td>
+            <td class="text-end"><%= isNaN(pc) ? '—' : pc.toFixed(2) %></td>
+            <td class="text-end"><%= isNaN(pv) ? '—' : pv.toFixed(2) %></td>
+            <td class="text-end"><%= prod.stock %></td>
+            <td class="text-end"><%= prod.stock_minimo %></td>
+            <td class="small text-muted"><%= prod.proveedor ? prod.proveedor.nombre : '—' %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-3 pb-3">
+      <%- include('../partials/pagination', { pagination: pagination, basePath: '/productos' }) %>
+    </div>
+  </div>
+</div>
+
+<p class="text-muted small mt-3 mb-0">
+  La tabla usa scroll vertical suave dentro de la ventana para no alargar toda la página; el servidor solo envía <%= pagination.perPage %> filas por petición.
+</p>
+
+<%- include('../partials/layout-app-end') %>

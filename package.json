@@ -1,0 +1,27 @@
+{
+  "name": "jireh-pos",
+  "version": "1.0.0",
+  "description": "Punto de Venta offline — Express, SQLite, Sequelize, Electron, EJS",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "server": "node app.js"
+  },
+  "keywords": ["pos", "electron", "express", "sqlite"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.0",
+    "method-override": "^3.0.0",
+    "sequelize": "^6.37.5",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
+}
