@@ -9,6 +9,7 @@ const defineCliente = require('./Cliente');
 const defineVenta = require('./Venta');
 const defineDetalleVenta = require('./DetalleVenta');
 const defineAbono = require('./Abono');
+const defineProductoProveedor = require('./ProductoProveedor');
 
 const Usuario = defineUsuario(sequelize);
 const Proveedor = defineProveedor(sequelize);
@@ -17,10 +18,11 @@ const Cliente = defineCliente(sequelize);
 const Venta = defineVenta(sequelize);
 const DetalleVenta = defineDetalleVenta(sequelize);
 const Abono = defineAbono(sequelize);
+const ProductoProveedor = defineProductoProveedor(sequelize);
 
-// Proveedor <-> Producto
-Proveedor.hasMany(Producto, { foreignKey: 'proveedor_id', as: 'productos' });
-Producto.belongsTo(Proveedor, { foreignKey: 'proveedor_id', as: 'proveedor' });
+// Producto <-> Proveedor (N:M)
+Producto.belongsToMany(Proveedor, { through: ProductoProveedor, as: 'proveedores', foreignKey: 'producto_id' });
+Proveedor.belongsToMany(Producto, { through: ProductoProveedor, as: 'productos', foreignKey: 'proveedor_id' });
 
 // Usuario -> Ventas / Abonos
 Usuario.hasMany(Venta, { foreignKey: 'usuario_id', as: 'ventas' });
@@ -57,4 +59,5 @@ module.exports = {
   Venta,
   DetalleVenta,
   Abono,
+  ProductoProveedor,
 };

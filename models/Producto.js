@@ -46,9 +46,10 @@ module.exports = (sequelize) => {
         defaultValue: 0,
         validate: { min: { args: [0], msg: 'El stock mínimo no puede ser negativo' } },
       },
-      proveedor_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
+      unidad_medida: {
+        type: DataTypes.STRING(30),
+        allowNull: false,
+        defaultValue: 'pieza',
       },
     },
     { tableName: 'productos' }

@@ -34,7 +34,7 @@ async function index(req, res, next) {
 
     const productos = await Producto.findAll({
       where,
-      include: [{ model: Proveedor, as: 'proveedor', attributes: ['id', 'nombre'], required: false }],
+      include: [{ model: Proveedor, as: 'proveedores', attributes: ['id', 'nombre'], through: { attributes: [] }, required: false }],
       limit: perPage,
       offset,
       order: [['nombre', 'ASC']],

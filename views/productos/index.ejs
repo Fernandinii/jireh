@@ -61,7 +61,7 @@
             <td class="text-end"><%= isNaN(pv) ? '—' : pv.toFixed(2) %></td>
             <td class="text-end"><%= prod.stock %></td>
             <td class="text-end"><%= prod.stock_minimo %></td>
-            <td class="small text-muted"><%= prod.proveedor ? prod.proveedor.nombre : '—' %></td>
+            <td class="small text-muted"><%= prod.proveedores && prod.proveedores.length ? prod.proveedores.map(p => p.nombre).join(', ') : '—' %></td>
           </tr>
           <% }); %>
         </tbody>
