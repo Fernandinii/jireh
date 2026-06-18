@@ -20,6 +20,9 @@ const productosRoutes = require('./routes/productos');
 const ventasRoutes = require('./routes/ventas');
 const clientesRoutes = require('./routes/clientes');
 const proveedoresRoutes = require('./routes/proveedores');
+const comprasRoutes = require('./routes/compras');
+const reportesRoutes = require('./routes/reportes');
+const faltantesRoutes = require('./routes/faltantes');
 
 const app = express();
 
@@ -77,6 +80,9 @@ app.use('/productos', productosRoutes);
 app.use('/ventas', ventasRoutes);
 app.use('/clientes', clientesRoutes);
 app.use('/proveedores', proveedoresRoutes);
+app.use('/compras', comprasRoutes);
+app.use('/reportes', reportesRoutes);
+app.use('/faltantes', faltantesRoutes);
 app.use('/', authRoutes);
 
 // Manejo de errores básico

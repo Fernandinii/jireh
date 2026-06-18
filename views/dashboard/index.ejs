@@ -1,60 +1,100 @@
 <%- include('../partials/layout-app-start', { title: 'Inicio', activeNav: 'dashboard', headerSubtitle: 'Panel principal' }) %>
 <%- include('../partials/flash') %>
 
-<h1 class="h4 mb-3">Bienvenido</h1>
-<p class="text-muted">Sesión activa como <strong><%= currentUser.rol %></strong>.</p>
+<h1 class="h4 mb-3">Panel de Control</h1>
 
-<% if (esAdmin) { %>
-  <div class="alert alert-info py-2 small">
-    Como <strong>administrador</strong> puede gestionar catálogos y configuración desde el menú lateral.
-  </div>
-<% } else { %>
-  <div class="alert alert-secondary py-2 small">
-    Rol <strong>vendedor</strong>: use <strong>Ventas</strong> para la caja y el menú lateral para consultar catálogos.
-  </div>
-<% } %>
-
-<div class="row g-3 mt-2">
-  <div class="col-md-6 col-lg-3">
-    <a href="/productos" class="text-decoration-none">
-      <div class="card h-100 shadow-sm border-0">
-        <div class="card-body">
-          <h2 class="h6 text-primary">Productos</h2>
-          <p class="small text-muted mb-0">Inventario y precios</p>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1">Total Productos</p>
+            <h3 class="mb-0 fw-bold"><%= totalProductos %></h3>
+          </div>
+          <span class="badge bg-primary fs-6"><%= totalProductos %></span>
         </div>
+        <a href="/productos" class="stretched-link"></a>
       </div>
-    </a>
+    </div>
   </div>
-  <div class="col-md-6 col-lg-3">
-    <a href="/ventas" class="text-decoration-none">
-      <div class="card h-100 shadow-sm border-0">
-        <div class="card-body">
-          <h2 class="h6 text-primary">Ventas</h2>
-          <p class="small text-muted mb-0">Caja / POS</p>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1">Stock Bajo</p>
+            <h3 class="mb-0 fw-bold <%= productosBajosStock > 0 ? 'text-warning' : '' %>"><%= productosBajosStock %></h3>
+          </div>
+          <span class="badge bg-warning text-dark fs-6"><%= productosBajosStock %></span>
         </div>
+        <a href="/productos" class="stretched-link"></a>
       </div>
-    </a>
+    </div>
   </div>
-  <div class="col-md-6 col-lg-3">
-    <a href="/clientes" class="text-decoration-none">
-      <div class="card h-100 shadow-sm border-0">
-        <div class="card-body">
-          <h2 class="h6 text-primary">Clientes</h2>
-          <p class="small text-muted mb-0">Fiado y abonos</p>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1">Clientes Activos</p>
+            <h3 class="mb-0 fw-bold"><%= totalClientes %></h3>
+          </div>
+          <span class="badge bg-success fs-6"><%= totalClientes %></span>
         </div>
+        <a href="/clientes" class="stretched-link"></a>
       </div>
-    </a>
+    </div>
   </div>
-  <div class="col-md-6 col-lg-3">
-    <a href="/proveedores" class="text-decoration-none">
-      <div class="card h-100 shadow-sm border-0">
-        <div class="card-body">
-          <h2 class="h6 text-primary">Proveedores</h2>
-          <p class="small text-muted mb-0">Contactos</p>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card h-100 shadow-sm border-0">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <p class="text-muted small mb-1">Ventas Hoy</p>
+            <h3 class="mb-0 fw-bold">$<%= ventasHoy.toFixed(2) %></h3>
+          </div>
+          <span class="badge bg-info text-dark fs-6">$<%= ventasHoy.toFixed(0) %></span>
         </div>
+        <a href="/ventas" class="stretched-link"></a>
       </div>
-    </a>
+    </div>
   </div>
 </div>
+
+<% if (bajosStock.length > 0) { %>
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white d-flex justify-content-between align-items-center py-2">
+    <span class="fw-semibold small">Productos con stock bajo</span>
+    <span class="badge bg-warning text-dark"><%= bajosStock.length %> productos</span>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-hover table-sm mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Producto</th>
+          <th class="text-end">Stock actual</th>
+          <th class="text-end">Stock mínimo</th>
+          <th>Unidad</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% bajosStock.forEach(function (p) { %>
+        <tr class="<%= p.stock === 0 ? 'table-danger' : 'table-warning' %>">
+          <td><%= p.nombre %></td>
+          <td class="text-end fw-bold"><%= p.stock %></td>
+          <td class="text-end"><%= p.stock_minimo %></td>
+          <td><%= p.unidad_medida || 'pieza' %></td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<% } else { %>
+<div class="alert alert-success py-2 small">
+  Todos los productos tienen stock suficiente.
+</div>
+<% } %>
 
 <%- include('../partials/layout-app-end') %>

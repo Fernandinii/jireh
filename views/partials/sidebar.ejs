@@ -5,11 +5,70 @@
     <div class="small text-white-50 mt-1">Punto de venta</div>
   </div>
   <nav class="nav flex-column p-3 gap-1 flex-grow-1">
-    <a class="nav-link <%= nav === 'dashboard' ? 'active' : '' %>" href="/dashboard">Inicio</a>
-    <a class="nav-link <%= nav === 'productos' ? 'active' : '' %>" href="/productos">Productos</a>
-    <a class="nav-link <%= nav === 'ventas' ? 'active' : '' %>" href="/ventas">Ventas</a>
-    <a class="nav-link <%= nav === 'clientes' ? 'active' : '' %>" href="/clientes">Clientes</a>
-    <a class="nav-link <%= nav === 'proveedores' ? 'active' : '' %>" href="/proveedores">Proveedores</a>
+    <!-- Caja / Inicio -->
+    <div class="nav-group">
+      <button class="sidebar-toggle<%= ['ventas'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuCaja" aria-expanded="<%= ['ventas'].includes(nav) ? 'true' : 'false' %>">
+        <span>Caja / Inicio</span>
+        <span class="sidebar-arrow<%= ['ventas'].includes(nav) ? ' open' : '' %>">▼</span>
+      </button>
+      <div class="collapse<%= ['ventas'].includes(nav) ? ' show' : '' %>" id="menuCaja">
+        <a class="nav-link sub<%= nav === 'ventas-nueva' ? ' active' : '' %>" href="/ventas/nueva">Nueva Venta (F1)</a>
+        <a class="nav-link sub<%= nav === 'ventas' ? ' active' : '' %>" href="/ventas">Historial del Día</a>
+      </div>
+    </div>
+
+    <!-- Productos -->
+    <div class="nav-group">
+      <button class="sidebar-toggle<%= ['productos'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuProductos" aria-expanded="<%= ['productos'].includes(nav) ? 'true' : 'false' %>">
+        <span>Productos</span>
+        <span class="sidebar-arrow<%= ['productos'].includes(nav) ? ' open' : '' %>">▼</span>
+      </button>
+      <div class="collapse<%= ['productos'].includes(nav) ? ' show' : '' %>" id="menuProductos">
+        <a class="nav-link sub<%= nav === 'productos' ? ' active' : '' %>" href="/productos">Catálogo</a>
+        <a class="nav-link sub" href="/productos/nuevo">Alta</a>
+        <a class="nav-link sub" href="/productos/categorias">Categorías</a>
+      </div>
+    </div>
+
+    <!-- Compras -->
+    <div class="nav-group">
+      <button class="sidebar-toggle<%= ['compras'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuCompras" aria-expanded="<%= ['compras'].includes(nav) ? 'true' : 'false' %>">
+        <span>Compras</span>
+        <span class="sidebar-arrow<%= ['compras'].includes(nav) ? ' open' : '' %>">▼</span>
+      </button>
+      <div class="collapse<%= ['compras'].includes(nav) ? ' show' : '' %>" id="menuCompras">
+        <a class="nav-link sub<%= nav === 'compras' ? ' active' : '' %>" href="/compras">Registrar Compra</a>
+        <a class="nav-link sub" href="/compras">Historial</a>
+        <a class="nav-link sub<%= nav === 'proveedores' ? ' active' : '' %>" href="/proveedores">Proveedores</a>
+      </div>
+    </div>
+
+    <!-- Clientes -->
+    <div class="nav-group">
+      <button class="sidebar-toggle<%= ['clientes'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuClientes" aria-expanded="<%= ['clientes'].includes(nav) ? 'true' : 'false' %>">
+        <span>Clientes</span>
+        <span class="sidebar-arrow<%= ['clientes'].includes(nav) ? ' open' : '' %>">▼</span>
+      </button>
+      <div class="collapse<%= ['clientes'].includes(nav) ? ' show' : '' %>" id="menuClientes">
+        <a class="nav-link sub<%= nav === 'clientes' ? ' active' : '' %>" href="/clientes">Listado de Clientes</a>
+        <a class="nav-link sub" href="/clientes/abonos">Control de Abonos</a>
+      </div>
+    </div>
+
+    <!-- Reportes -->
+    <div class="nav-group">
+      <button class="sidebar-toggle<%= ['reportes'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuReportes" aria-expanded="<%= ['reportes'].includes(nav) ? 'true' : 'false' %>">
+        <span>Reportes</span>
+        <span class="sidebar-arrow<%= ['reportes'].includes(nav) ? ' open' : '' %>">▼</span>
+      </button>
+      <div class="collapse<%= ['reportes'].includes(nav) ? ' show' : '' %>" id="menuReportes">
+        <a class="nav-link sub<%= nav === 'reportes' ? ' active' : '' %>" href="/reportes">Cortes de Caja</a>
+        <a class="nav-link sub" href="/reportes">Ganancias Netas</a>
+      </div>
+    </div>
+
+    <!-- Faltantes (enlace directo) -->
+    <a class="nav-link<%= nav === 'faltantes' ? ' active' : '' %>" href="/faltantes">Faltantes</a>
   </nav>
   <div class="p-3 border-top border-light border-opacity-25 small text-white-50">
     Sesión: <%= currentUser ? currentUser.nombre : '' %>
