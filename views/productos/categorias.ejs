@@ -1,0 +1,82 @@
+<%- include('../partials/layout-app-start', { title: 'Categorías', activeNav: 'productos-categorias', headerSubtitle: 'Organiza tu catálogo' }) %>
+<%- include('../partials/flash') %>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h4 mb-0">Categorías</h1>
+  <a href="/productos" class="btn btn-outline-secondary btn-sm">Volver al catálogo</a>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <h2 class="h6 mb-3">Nueva categoría</h2>
+    <form action="/productos/categorias" method="post" class="row g-2 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label" for="nombre">Nombre *</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Ej. Lácteos" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label" for="color_hex">Color</label>
+        <input type="color" class="form-control form-control-color w-100" id="color_hex" name="color_hex" value="#6c757d" />
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary">Crear</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <table class="table table-hover table-sm mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Nombre</th>
+          <th class="text-end">Productos activos</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!categorias.length) { %>
+        <tr><td colspan="3" class="text-center text-muted py-4">No hay categorías registradas.</td></tr>
+        <% } %>
+        <% categorias.forEach(function (c) {
+             const count = Number(c.get('productosCount'));
+        %>
+        <tr>
+          <td>
+            <span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background-color:<%= c.color_hex %>;vertical-align:middle"></span>
+            <%= c.nombre %>
+          </td>
+          <td class="text-end"><span class="badge bg-secondary"><%= count %></span></td>
+          <td class="text-end text-nowrap">
+            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#edit-<%= c.id %>">Editar</button>
+            <form action="/productos/categorias/<%= c.id %>?_method=DELETE" method="post" class="d-inline"
+              onsubmit="return confirm('¿Eliminar la categoría \'<%= c.nombre %>\'?<% if (count > 0) { %> Los productos quedarán sin categoría.<% } %>');">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+        <tr class="collapse" id="edit-<%= c.id %>">
+          <td colspan="3" class="bg-light">
+            <form action="/productos/categorias/<%= c.id %>?_method=PUT" method="post" class="row g-2 align-items-end p-2">
+              <div class="col-md-6">
+                <label class="form-label small" for="nombre_<%= c.id %>">Nombre</label>
+                <input type="text" class="form-control form-control-sm" id="nombre_<%= c.id %>" name="nombre" value="<%= c.nombre %>" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small" for="color_<%= c.id %>">Color</label>
+                <input type="color" class="form-control form-control-sm form-control-color" id="color_<%= c.id %>" name="color_hex" value="<%= c.color_hex %>" />
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+              </div>
+            </form>
+          </td>
+        </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../partials/layout-app-end') %>

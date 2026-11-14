@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ticket #<%= String(venta.folio_local).padStart(4, '0') %> — Jireh POS</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #eee;
+      margin: 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      color: #000;
+    }
+    .ticket {
+      max-width: 300px;
+      margin: 12px auto;
+      background: #fff;
+      padding: 10px 12px;
+      line-height: 1.35;
+    }
+    .ticket .center { text-align: center; }
+    .ticket h1 { font-size: 16px; margin: 0 0 2px; }
+    .ticket .sub { font-size: 12px; }
+    hr { border: none; border-top: 1px dashed #000; margin: 6px 0; }
+    .row { display: flex; justify-content: space-between; }
+    .bold { font-weight: bold; }
+    .total { font-size: 15px; }
+    .no-print { text-align: center; margin: 12px 0; }
+    .no-print button {
+      font-family: inherit;
+      font-size: 14px;
+      padding: 8px 24px;
+      cursor: pointer;
+    }
+    @media print {
+      body { background: #fff; }
+      .no-print { display: none; }
+      .ticket { margin: 0; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ticket">
+    <div class="center">
+      <h1><%= venta.empresa ? venta.empresa.nombre : 'Jireh POS' %></h1>
+      <% if (venta.empresa && venta.empresa.rfc) { %><div class="sub">RFC: <%= venta.empresa.rfc %></div><% } %>
+      <% if (venta.sucursal) { %>
+        <div class="sub"><%= venta.sucursal.nombre %></div>
+        <% if (venta.sucursal.direccion) { %><div class="sub"><%= venta.sucursal.direccion %></div><% } %>
+        <% if (venta.sucursal.telefono) { %><div class="sub">Tel: <%= venta.sucursal.telefono %></div><% } %>
+      <% } %>
+    </div>
+    <hr />
+    <div class="row">
+      <span>Folio: #<%= String(venta.folio_local).padStart(4, '0') %></span>
+      <span><%= new Date(venta.fecha_venta).toLocaleDateString('es-MX') %></span>
+    </div>
+    <div><%= new Date(venta.fecha_venta).toLocaleTimeString('es-MX') %></div>
+    <div>Cajero: <%= venta.usuario ? (venta.usuario.nombre_completo || venta.usuario.nombre_usuario) : '—' %></div>
+    <% if (venta.cliente) { %><div>Cliente: <%= venta.cliente.nombre %></div><% } %>
+    <div>Pago: <%= venta.tipo_pago === 'credito' ? 'CRÉDITO' : 'CONTADO' %></div>
+    <hr />
+    <% venta.detalles.forEach(function (d) {
+         var cant = d.producto && d.producto.es_granel ? Number(d.cantidad).toFixed(3) : String(Number(d.cantidad));
+         var unidad = d.producto ? (d.producto.unidad_medida || '') : '';
+    %>
+    <div class="row">
+      <span><%= cant %><%= d.producto && d.producto.es_granel && unidad ? ' ' + unidad : '' %> x <%= d.producto ? d.producto.nombre : 'Producto' %></span>
+      <span><%= Number(d.subtotal).toFixed(2) %></span>
+    </div>
+    <% }); %>
+    <hr />
+    <div class="row total bold"><span>TOTAL</span><span>$<%= Number(venta.total).toFixed(2) %></span></div>
+    <% if (venta.tipo_pago === 'contado') { %>
+      <div class="row"><span>Recibido</span><span>$<%= Number(venta.monto_recibido).toFixed(2) %></span></div>
+      <div class="row"><span>Cambio</span><span>$<%= Number(venta.cambio).toFixed(2) %></span></div>
+    <% } %>
+    <hr />
+    <div class="center sub">¡Gracias por su compra!</div>
+  </div>
+
+  <div class="no-print">
+    <button onclick="window.print()">Imprimir</button>
+  </div>
+</body>
+</html>

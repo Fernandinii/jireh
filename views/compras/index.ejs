@@ -1,10 +1,79 @@
-<%- include('../partials/layout-app-start', { title: 'Compras', activeNav: 'compras', headerSubtitle: 'Módulo de compras' }) %>
+<%- include('../partials/layout-app-start', { title: 'Compras', activeNav: 'compras', headerSubtitle: 'Historial de compras a proveedores' }) %>
 <%- include('../partials/flash') %>
 
-<div class="text-center py-5">
-  <h2 class="h4 text-muted mb-3">Módulo en desarrollo</h2>
-  <p class="text-muted small">La sección de Compras estará disponible próximamente.</p>
-  <a href="/dashboard" class="btn btn-outline-primary btn-sm">Volver al panel</a>
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <h1 class="h4 mb-0">Compras</h1>
+  <a href="/compras/nueva" class="btn btn-success btn-sm">+ Nueva Compra</a>
+</div>
+
+<form class="row g-2 align-items-end mb-3" method="get" action="/compras">
+  <div class="col-sm-6 col-md-3">
+    <label class="form-label small text-muted mb-0" for="proveedor_id">Proveedor</label>
+    <select class="form-select form-select-sm" id="proveedor_id" name="proveedor_id">
+      <option value="">Todos</option>
+      <% proveedores.forEach(function (p) { %>
+        <option value="<%= p.id %>" <%= proveedorId === p.id ? 'selected' : '' %>><%= p.nombre %></option>
+      <% }); %>
+    </select>
+  </div>
+  <div class="col-auto">
+    <label class="form-label small text-muted mb-0" for="fecha">Fecha</label>
+    <input class="form-control form-control-sm" id="fecha" name="fecha" type="date" value="<%= fecha %>" />
+  </div>
+  <div class="col-auto">
+    <label class="form-label small text-muted mb-0" for="perPage">Por página</label>
+    <select class="form-select form-select-sm" id="perPage" name="perPage" onchange="this.form.submit()">
+      <% [10, 25, 50, 100].forEach(function (n) { %>
+        <option value="<%= n %>" <%= pagination.perPage === n ? 'selected' : '' %>><%= n %></option>
+      <% }); %>
+    </select>
+  </div>
+  <div class="col-auto">
+    <input type="hidden" name="page" value="1" />
+    <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+    <% if (proveedorId || fecha) { %>
+      <a href="/compras?perPage=<%= pagination.perPage %>" class="btn btn-sm btn-outline-secondary">Limpiar</a>
+    <% } %>
+  </div>
+</form>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-sm mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Fecha</th>
+            <th>Proveedor</th>
+            <th>Folio</th>
+            <th>Registró</th>
+            <th class="text-end">Total</th>
+            <th class="text-end"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!compras.length) { %>
+          <tr><td colspan="6" class="text-center text-muted py-4">No hay compras registradas.</td></tr>
+          <% } %>
+          <% compras.forEach(function (c) { %>
+          <tr>
+            <td class="small"><%= new Date(c.fecha_compra).toLocaleString('es-MX') %></td>
+            <td class="fw-semibold"><%= c.proveedor ? c.proveedor.nombre : '—' %></td>
+            <td class="small"><code><%= c.folio_factura || '—' %></code></td>
+            <td class="small"><%= c.usuario ? (c.usuario.nombre_completo || c.usuario.nombre_usuario) : '—' %></td>
+            <td class="text-end fw-bold">$<%= Number(c.total).toFixed(2) %></td>
+            <td class="text-end">
+              <a href="/compras/<%= c.id %>" class="btn btn-sm btn-outline-primary">Ver</a>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <div class="px-3 pb-3">
+      <%- include('../partials/pagination', { pagination: pagination, basePath: '/compras', extraParams: { proveedor_id: proveedorId, fecha: fecha } }) %>
+    </div>
+  </div>
 </div>
 
 <%- include('../partials/layout-app-end') %>

@@ -1,10 +1,206 @@
-<%- include('../partials/layout-app-start', { title: 'Reportes', activeNav: 'reportes', headerSubtitle: 'Reportes y estadísticas' }) %>
+<%- include('../partials/layout-app-start', { title: 'Reportes', activeNav: 'reportes', headerSubtitle: 'Corte de caja y análisis' }) %>
 <%- include('../partials/flash') %>
 
-<div class="text-center py-5">
-  <h2 class="h4 text-muted mb-3">Módulo en desarrollo</h2>
-  <p class="text-muted small">La sección de Reportes estará disponible próximamente.</p>
-  <a href="/dashboard" class="btn btn-outline-primary btn-sm">Volver al panel</a>
+<div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <h1 class="h4 mb-0">Reportes y Corte de Caja</h1>
 </div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <form id="form-filtros" class="row g-2 align-items-end" method="get" action="/reportes">
+      <div class="col-auto">
+        <label class="form-label small text-muted mb-1" for="desde">Desde</label>
+        <input type="date" class="form-control form-control-sm" id="desde" name="desde" value="<%= desde %>" />
+      </div>
+      <div class="col-auto">
+        <label class="form-label small text-muted mb-1" for="hasta">Hasta</label>
+        <input type="date" class="form-control form-control-sm" id="hasta" name="hasta" value="<%= hasta %>" />
+      </div>
+      <div class="col-auto d-flex gap-1 flex-wrap">
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-rango="hoy">Hoy</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-rango="ayer">Ayer</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-rango="7dias">Últimos 7 días</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" data-rango="mes">Este mes</button>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-sm btn-primary">Filtrar</button>
+      </div>
+      <div class="col-auto ms-auto">
+        <a id="btn-csv" href="/reportes/exportar-csv?desde=<%= desde %>&hasta=<%= hasta %>" class="btn btn-sm btn-success">Exportar CSV</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <div class="text-muted small text-uppercase">Ventas Totales</div>
+        <div class="fs-3 fw-bold">$<%= totalVendido.toFixed(2) %></div>
+        <div class="small text-muted"><%= tickets %> ticket(s) · prom. $<%= ticketPromedio.toFixed(2) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <div class="text-muted small text-uppercase">Utilidad Bruta Estimada</div>
+        <div class="fs-3 fw-bold <%= utilidadBruta >= 0 ? 'text-success' : 'text-danger' %>">$<%= utilidadBruta.toFixed(2) %></div>
+        <div class="small text-muted">Margen <%= margenPorcentaje.toFixed(2) %>%</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-body">
+        <div class="text-muted small text-uppercase">Abonos Recibidos</div>
+        <div class="fs-3 fw-bold">$<%= abonosTotal.toFixed(2) %></div>
+        <div class="small text-muted">Efectivo $<%= abonosEfectivo.toFixed(2) %> · Otros $<%= abonosOtros.toFixed(2) %></div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="card shadow-sm h-100" style="border:2px solid #198754;">
+      <div class="card-body">
+        <div class="text-muted small text-uppercase">Efectivo Esperado en Caja</div>
+        <div class="fs-3 fw-bold text-success">$<%= efectivoEsperado.toFixed(2) %></div>
+        <div class="small text-muted">Contado + abonos en efectivo</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white">
+    <h2 class="h6 mb-0">Desglose por método de pago</h2>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <% [['contado', 'Contado', 'bg-success'], ['credito', 'Crédito / Fiado', 'bg-warning text-dark'], ['transferencia', 'Transferencia', 'bg-info text-dark'], ['tarjeta', 'Tarjeta', 'bg-primary']].forEach(function (t) {
+           const clave = t[0]; const label = t[1]; const clase = t[2]; const data = porTipo[clave];
+      %>
+      <div class="col-sm-6 col-xl-3">
+        <div class="d-flex align-items-center justify-content-between border rounded p-3">
+          <div>
+            <span class="badge <%= clase %> mb-1"><%= label %></span>
+            <div class="small text-muted"><%= data.tickets %> ticket(s)</div>
+          </div>
+          <div class="fs-5 fw-bold">$<%= data.total.toFixed(2) %></div>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header bg-white">
+        <h2 class="h6 mb-0">Top 10 Productos Más Vendidos</h2>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th class="text-end">Cantidad</th>
+                <th class="text-end">Total</th>
+                <th class="text-end">Utilidad</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!topProductos.length) { %>
+              <tr><td colspan="4" class="text-center text-muted py-4">Sin ventas en el rango.</td></tr>
+              <% } %>
+              <% topProductos.forEach(function (p) { %>
+              <tr>
+                <td class="fw-semibold"><%= p.nombre %></td>
+                <td class="text-end"><%= p.es_granel ? p.cantidad.toFixed(3) + ' ' + p.unidad_medida : p.cantidad %></td>
+                <td class="text-end">$<%= p.total.toFixed(2) %></td>
+                <td class="text-end <%= p.utilidad >= 0 ? 'text-success' : 'text-danger' %>">$<%= p.utilidad.toFixed(2) %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-lg-6">
+    <div class="card shadow-sm border-0 h-100">
+      <div class="card-header bg-white">
+        <h2 class="h6 mb-0">Resumen por Cajero</h2>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-sm table-hover mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Cajero</th>
+                <th class="text-end">Tickets</th>
+                <th class="text-end">Total cobrado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (!porCajero.length) { %>
+              <tr><td colspan="3" class="text-center text-muted py-4">Sin ventas en el rango.</td></tr>
+              <% } %>
+              <% porCajero.forEach(function (c) { %>
+              <tr>
+                <td class="fw-semibold"><%= c.nombre %></td>
+                <td class="text-end"><%= c.tickets %></td>
+                <td class="text-end">$<%= c.total.toFixed(2) %></td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  function fmt(d) {
+    return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+  }
+  var desde = document.getElementById('desde');
+  var hasta = document.getElementById('hasta');
+  var form = document.getElementById('form-filtros');
+  var btnCsv = document.getElementById('btn-csv');
+
+  function aplicar(ini, fin) {
+    desde.value = fmt(ini);
+    hasta.value = fmt(fin);
+    btnCsv.href = '/reportes/exportar-csv?desde=' + desde.value + '&hasta=' + hasta.value;
+    form.submit();
+  }
+
+  document.querySelectorAll('[data-rango]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      var ini, fin;
+      switch (b.dataset.rango) {
+        case 'hoy':
+          ini = new Date(hoy); fin = new Date(hoy); break;
+        case 'ayer':
+          ini = new Date(hoy); ini.setDate(ini.getDate() - 1); fin = new Date(ini); break;
+        case '7dias':
+          fin = new Date(hoy); ini = new Date(hoy); ini.setDate(ini.getDate() - 6); break;
+        case 'mes':
+          ini = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+          fin = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0);
+          break;
+      }
+      aplicar(ini, fin);
+    });
+  });
+})();
+</script>
 
 <%- include('../partials/layout-app-end') %>

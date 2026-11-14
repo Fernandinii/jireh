@@ -1,5 +1,5 @@
 /**
- * Línea de venta: cantidades y precios al momento de la venta (histórico).
+ * Línea de venta: cantidades (3 decimales para granel) y precios históricos.
  */
 const { DataTypes } = require('sequelize');
 
@@ -8,22 +8,28 @@ module.exports = (sequelize) => {
     'DetalleVenta',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      venta_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'ventas', key: 'id' },
+      },
+      producto_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'productos', key: 'id' },
       },
       cantidad: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.DECIMAL(12, 3),
         allowNull: false,
-        validate: { min: { args: [1], msg: 'La cantidad debe ser al menos 1' } },
       },
-      /** Precio de venta unitario aplicado en caja */
       precio_unitario: {
         type: DataTypes.DECIMAL(12, 2),
         allowNull: false,
-        validate: { min: { args: [0], msg: 'El precio no puede ser negativo' } },
       },
-      /** Costo unitario al momento de la venta (para reportes de ganancia) */
       costo_unitario: {
         type: DataTypes.DECIMAL(12, 2),
         allowNull: false,
@@ -31,15 +37,6 @@ module.exports = (sequelize) => {
       },
       subtotal: {
         type: DataTypes.DECIMAL(12, 2),
-        allowNull: false,
-        validate: { min: { args: [0], msg: 'El subtotal no puede ser negativo' } },
-      },
-      venta_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      producto_id: {
-        type: DataTypes.INTEGER,
         allowNull: false,
       },
     },

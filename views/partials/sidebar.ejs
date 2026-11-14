@@ -7,11 +7,11 @@
   <nav class="nav flex-column p-3 gap-1 flex-grow-1">
     <!-- Caja / Inicio -->
     <div class="nav-group">
-      <button class="sidebar-toggle<%= ['ventas'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuCaja" aria-expanded="<%= ['ventas'].includes(nav) ? 'true' : 'false' %>">
+      <button class="sidebar-toggle<%= ['ventas', 'ventas-nueva'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuCaja" aria-expanded="<%= ['ventas', 'ventas-nueva'].includes(nav) ? 'true' : 'false' %>">
         <span>Caja / Inicio</span>
-        <span class="sidebar-arrow<%= ['ventas'].includes(nav) ? ' open' : '' %>">▼</span>
+        <span class="sidebar-arrow<%= ['ventas', 'ventas-nueva'].includes(nav) ? ' open' : '' %>">▼</span>
       </button>
-      <div class="collapse<%= ['ventas'].includes(nav) ? ' show' : '' %>" id="menuCaja">
+      <div class="collapse<%= ['ventas', 'ventas-nueva'].includes(nav) ? ' show' : '' %>" id="menuCaja">
         <a class="nav-link sub<%= nav === 'ventas-nueva' ? ' active' : '' %>" href="/ventas/nueva">Nueva Venta (F1)</a>
         <a class="nav-link sub<%= nav === 'ventas' ? ' active' : '' %>" href="/ventas">Historial del Día</a>
       </div>
@@ -19,26 +19,26 @@
 
     <!-- Productos -->
     <div class="nav-group">
-      <button class="sidebar-toggle<%= ['productos'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuProductos" aria-expanded="<%= ['productos'].includes(nav) ? 'true' : 'false' %>">
+      <button class="sidebar-toggle<%= ['productos', 'productos-nuevo', 'productos-categorias'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuProductos" aria-expanded="<%= ['productos', 'productos-nuevo', 'productos-categorias'].includes(nav) ? 'true' : 'false' %>">
         <span>Productos</span>
-        <span class="sidebar-arrow<%= ['productos'].includes(nav) ? ' open' : '' %>">▼</span>
+        <span class="sidebar-arrow<%= ['productos', 'productos-nuevo', 'productos-categorias'].includes(nav) ? ' open' : '' %>">▼</span>
       </button>
-      <div class="collapse<%= ['productos'].includes(nav) ? ' show' : '' %>" id="menuProductos">
+      <div class="collapse<%= ['productos', 'productos-nuevo', 'productos-categorias'].includes(nav) ? ' show' : '' %>" id="menuProductos">
         <a class="nav-link sub<%= nav === 'productos' ? ' active' : '' %>" href="/productos">Catálogo</a>
-        <a class="nav-link sub" href="/productos/nuevo">Alta</a>
-        <a class="nav-link sub" href="/productos/categorias">Categorías</a>
+        <a class="nav-link sub<%= nav === 'productos-nuevo' ? ' active' : '' %>" href="/productos/nuevo">Alta</a>
+        <a class="nav-link sub<%= nav === 'productos-categorias' ? ' active' : '' %>" href="/productos/categorias">Categorías</a>
       </div>
     </div>
 
     <!-- Compras -->
     <div class="nav-group">
-      <button class="sidebar-toggle<%= ['compras'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuCompras" aria-expanded="<%= ['compras'].includes(nav) ? 'true' : 'false' %>">
+      <button class="sidebar-toggle<%= ['compras', 'compras-nueva', 'proveedores'].includes(nav) ? ' active' : '' %>" type="button" data-bs-toggle="collapse" data-bs-target="#menuCompras" aria-expanded="<%= ['compras', 'compras-nueva', 'proveedores'].includes(nav) ? 'true' : 'false' %>">
         <span>Compras</span>
-        <span class="sidebar-arrow<%= ['compras'].includes(nav) ? ' open' : '' %>">▼</span>
+        <span class="sidebar-arrow<%= ['compras', 'compras-nueva', 'proveedores'].includes(nav) ? ' open' : '' %>">▼</span>
       </button>
-      <div class="collapse<%= ['compras'].includes(nav) ? ' show' : '' %>" id="menuCompras">
-        <a class="nav-link sub<%= nav === 'compras' ? ' active' : '' %>" href="/compras">Registrar Compra</a>
-        <a class="nav-link sub" href="/compras">Historial</a>
+      <div class="collapse<%= ['compras', 'compras-nueva'].includes(nav) ? ' show' : '' %>" id="menuCompras">
+        <a class="nav-link sub<%= nav === 'compras-nueva' ? ' active' : '' %>" href="/compras/nueva">Registrar Compra</a>
+        <a class="nav-link sub<%= nav === 'compras' ? ' active' : '' %>" href="/compras">Historial</a>
         <a class="nav-link sub<%= nav === 'proveedores' ? ' active' : '' %>" href="/proveedores">Proveedores</a>
       </div>
     </div>

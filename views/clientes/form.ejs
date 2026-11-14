@@ -1,0 +1,45 @@
+<%- include('../partials/layout-app-start', { title: title, activeNav: activeNav, headerSubtitle: isEdit ? 'Editar cliente' : 'Alta de cliente' }) %>
+<%- include('../partials/flash') %>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h4 mb-0"><%= title %></h1>
+  <a href="/clientes" class="btn btn-outline-secondary btn-sm">Volver</a>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-danger"><%= error %></div>
+<% } %>
+
+<form action="<%= formAction %><%= isEdit ? '?_method=PUT' : '' %>" method="post" class="card shadow-sm border-0">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-7">
+        <label class="form-label" for="nombre">Nombre *</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" value="<%= cliente.nombre || '' %>" required />
+      </div>
+      <div class="col-md-5">
+        <label class="form-label" for="telefono">Teléfono</label>
+        <input type="text" class="form-control" id="telefono" name="telefono" value="<%= cliente.telefono || '' %>" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="limite_credito">Límite de crédito ($)</label>
+        <input type="number" class="form-control" id="limite_credito" name="limite_credito" step="0.01" min="0"
+          value="<%= cliente.limite_credito != null && cliente.limite_credito !== '' ? cliente.limite_credito : '0' %>" />
+        <div class="form-text">0 = sin límite (fiado ilimitado).</div>
+      </div>
+      <% if (isEdit) { %>
+      <div class="col-md-6">
+        <label class="form-label">Saldo actual</label>
+        <input type="text" class="form-control" value="$<%= Number(cliente.saldo_actual || 0).toFixed(2) %>" disabled />
+        <div class="form-text">El saldo se modifica con ventas a crédito y abonos.</div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <div class="card-footer bg-white d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><%= isEdit ? 'Guardar cambios' : 'Crear cliente' %></button>
+    <a href="/clientes" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
+
+<%- include('../partials/layout-app-end') %>

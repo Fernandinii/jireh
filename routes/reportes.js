@@ -6,5 +6,6 @@ const router = express.Router();
 
 router.use(requireAuth);
 router.get('/', reportesController.index);
+router.get('/exportar-csv', reportesController.exportarCsv);
 
 module.exports = router;

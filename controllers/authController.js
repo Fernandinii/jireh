@@ -12,7 +12,7 @@ function loginValidators() {
 }
 
 async function getLogin(req, res) {
-  if (req.session.userId) {
+  if (req.session.user) {
     return res.redirect('/dashboard');
   }
   res.render('auth/login', {
@@ -39,16 +39,21 @@ async function postLogin(req, res) {
       where: { nombre_usuario: nombre_usuario.trim(), activo: true },
     });
 
-    if (!user || !(await user.comparePassword(password))) {
+    if (!user || !(await user.validarPassword(password))) {
       req.session.flash = { error: 'Usuario o contraseña incorrectos' };
       return res.redirect('/login');
     }
 
-    req.session.userId = user.id;
-    req.session.rol = user.rol;
-    req.session.nombreUsuario = user.nombre_completo || user.nombre_usuario;
+    req.session.user = {
+      id: user.id,
+      empresa_id: user.empresa_id,
+      sucursal_id: user.sucursal_id,
+      rol: user.rol,
+      nombre_usuario: user.nombre_usuario,
+      nombre: user.nombre_completo || user.nombre_usuario,
+    };
 
-    req.session.flash = { success: `Bienvenido, ${req.session.nombreUsuario}` };
+    req.session.flash = { success: `Bienvenido, ${req.session.user.nombre}` };
     return res.redirect('/dashboard');
   } catch (err) {
     console.error(err);

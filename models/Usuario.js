@@ -1,6 +1,6 @@
 /**
- * Modelo Usuario: login, roles administrador | vendedor.
- * La contraseña se guarda hasheada (bcrypt); no exponer el hash en JSON por defecto.
+ * Usuario: login y roles. Ligado a una empresa y, opcionalmente, a una sucursal.
+ * La contraseña se guarda hasheada (bcrypt) vía hooks beforeCreate/beforeUpdate.
  */
 const { DataTypes } = require('sequelize');
 const bcrypt = require('bcrypt');
@@ -12,17 +12,24 @@ module.exports = (sequelize) => {
     'Usuario',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      empresa_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'empresas', key: 'id' },
+      },
+      sucursal_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'sucursales', key: 'id' },
       },
       nombre_usuario: {
         type: DataTypes.STRING(80),
         allowNull: false,
-        unique: { msg: 'El nombre de usuario ya existe' },
-        validate: {
-          notEmpty: { msg: 'El usuario es obligatorio' },
-        },
+        validate: { notEmpty: { msg: 'El usuario es obligatorio' } },
       },
       password_hash: {
         type: DataTypes.STRING(255),
@@ -33,9 +40,9 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
       rol: {
-        type: DataTypes.ENUM('administrador', 'vendedor'),
+        type: DataTypes.STRING(20),
         allowNull: false,
-        defaultValue: 'vendedor',
+        defaultValue: 'cajero',
       },
       activo: {
         type: DataTypes.BOOLEAN,
@@ -45,6 +52,9 @@ module.exports = (sequelize) => {
     },
     {
       tableName: 'usuarios',
+      indexes: [
+        { unique: true, fields: ['empresa_id', 'nombre_usuario'] },
+      ],
       hooks: {
         beforeCreate: async (user) => {
           if (user.password_hash && !user.password_hash.startsWith('$2')) {
@@ -66,11 +76,11 @@ module.exports = (sequelize) => {
     }
   );
 
-  Usuario.prototype.comparePassword = function comparePassword(plain) {
+  Usuario.prototype.validarPassword = function validarPassword(plain) {
     return bcrypt.compare(plain, this.password_hash);
   };
 
-  /** Asigna contraseña en texto plano (el hook la hashea) */
+  /** Asigna contraseña en texto plano (el hook la hashea). */
   Usuario.prototype.setPasswordPlain = async function setPasswordPlain(plain) {
     this.password_hash = plain;
     await this.save({ fields: ['password_hash'] });

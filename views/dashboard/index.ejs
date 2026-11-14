@@ -80,11 +80,11 @@
       </thead>
       <tbody>
         <% bajosStock.forEach(function (p) { %>
-        <tr class="<%= p.stock === 0 ? 'table-danger' : 'table-warning' %>">
-          <td><%= p.nombre %></td>
-          <td class="text-end fw-bold"><%= p.stock %></td>
-          <td class="text-end"><%= p.stock_minimo %></td>
-          <td><%= p.unidad_medida || 'pieza' %></td>
+        <tr class="<%= Number(p.stock) === 0 ? 'table-danger' : 'table-warning' %>">
+          <td><%= p.producto ? p.producto.nombre : '—' %></td>
+          <td class="text-end fw-bold"><%= Number(p.stock) %></td>
+          <td class="text-end"><%= Number(p.stock_minimo) %></td>
+          <td><%= (p.producto && p.producto.unidad_medida) || 'pieza' %></td>
         </tr>
         <% }); %>
       </tbody>

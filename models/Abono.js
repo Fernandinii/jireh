@@ -1,5 +1,5 @@
 /**
- * Abono a cuenta de un cliente: reduce el saldo (fiado).
+ * Abono a cuenta de un cliente (fiado): reduce saldo_actual.
  */
 const { DataTypes } = require('sequelize');
 
@@ -8,9 +8,29 @@ module.exports = (sequelize) => {
     'Abono',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      empresa_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'empresas', key: 'id' },
+      },
+      sucursal_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'sucursales', key: 'id' },
+      },
+      cliente_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'clientes', key: 'id' },
+      },
+      usuario_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'usuarios', key: 'id' },
       },
       monto: {
         type: DataTypes.DECIMAL(12, 2),
@@ -24,28 +44,19 @@ module.exports = (sequelize) => {
           },
         },
       },
+      metodo_pago: {
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        defaultValue: 'efectivo',
+      },
+      notas: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
       fecha_abono: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
-      },
-      notas: {
-        type: DataTypes.STRING(500),
-        allowNull: true,
-      },
-      cliente_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-      },
-      /** Usuario que registró el abono en caja */
-      usuario_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
-      },
-      /** Referencia opcional a una venta a crédito */
-      venta_id: {
-        type: DataTypes.INTEGER,
-        allowNull: true,
       },
     },
     { tableName: 'abonos' }

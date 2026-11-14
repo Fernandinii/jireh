@@ -1,10 +1,136 @@
-<%- include('../partials/layout-app-start', { title: 'Faltantes', activeNav: 'faltantes', headerSubtitle: 'Productos faltantes' }) %>
+<%- include('../partials/layout-app-start', { title: 'Faltantes', activeNav: 'faltantes', headerSubtitle: 'Por surtir y pedir a proveedores' }) %>
 <%- include('../partials/flash') %>
 
-<div class="text-center py-5">
-  <h2 class="h4 text-muted mb-3">Módulo en desarrollo</h2>
-  <p class="text-muted small">La sección de Faltantes estará disponible próximamente.</p>
-  <a href="/dashboard" class="btn btn-outline-primary btn-sm">Volver al panel</a>
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h4 mb-0">Lista de Faltantes</h1>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <h2 class="h6 mb-3">¿Qué pidió un cliente o qué falta pedir?</h2>
+    <form action="/faltantes" method="post" class="row g-2 align-items-end">
+      <div class="col-md-6">
+        <label class="form-label small text-muted mb-1" for="descripcion">Descripción *</label>
+        <input type="text" class="form-control" id="descripcion" name="descripcion" required placeholder="Ej. Paquete de hojas tamaño carta" />
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small text-muted mb-1" for="cantidad_sugerida">Cantidad sugerida</label>
+        <input type="number" class="form-control" id="cantidad_sugerida" name="cantidad_sugerida" step="0.001" min="0.001" value="1" />
+      </div>
+      <div class="col-md-3">
+        <button type="submit" class="btn btn-primary w-100">Anotar faltante</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-header bg-white d-flex align-items-center justify-content-between">
+    <h2 class="h6 mb-0">Pendientes de surtir (<%= abiertos.length %>)</h2>
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-hover table-sm mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Artículo</th>
+            <th>Origen</th>
+            <th class="text-end">Stock actual</th>
+            <th class="text-end">Mínimo</th>
+            <th>Proveedor sugerido</th>
+            <th class="text-end">A pedir</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!abiertos.length) { %>
+          <tr><td colspan="7" class="text-center text-muted py-4">No hay faltantes pendientes.</td></tr>
+          <% } %>
+          <% abiertos.forEach(function (f) {
+               const prod = f.producto;
+               const inv = prod && prod.inventarioSucursal && prod.inventarioSucursal.length ? prod.inventarioSucursal[0] : null;
+          %>
+          <tr>
+            <td>
+              <strong><%= prod ? prod.nombre : f.descripcion %></strong>
+              <% if (prod && f.descripcion !== prod.nombre) { %>
+                <div class="small text-muted"><%= f.descripcion %></div>
+              <% } %>
+            </td>
+            <td>
+              <% if (f.origen === 'peticion_cliente') { %>
+                <span class="badge bg-info text-dark">Petición Cliente</span>
+              <% } else { %>
+                <span class="badge bg-warning text-dark">Stock Bajo</span>
+              <% } %>
+            </td>
+            <td class="text-end"><%= inv ? Number(inv.stock) : '—' %></td>
+            <td class="text-end"><%= inv ? Number(inv.stock_minimo) : '—' %></td>
+            <td class="small text-muted">
+              <% if (prod && prod.proveedores && prod.proveedores.length) { %>
+                <%= prod.proveedores.map(p => p.nombre).join(', ') %>
+              <% } else { %>—<% } %>
+            </td>
+            <td class="text-end fw-bold">
+              <%= prod && prod.es_granel ? Number(f.cantidad_sugerida).toFixed(3) : String(Number(f.cantidad_sugerida)) %>
+              <%= prod && prod.es_granel ? prod.unidad_medida : '' %>
+            </td>
+            <td class="text-end text-nowrap">
+              <form action="/faltantes/<%= f.id %>/resolver" method="post" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-success">Marcar Surtido</button>
+              </form>
+              <form action="/faltantes/<%= f.id %>?_method=DELETE" method="post" class="d-inline"
+                onsubmit="return confirm('¿Eliminar este faltante?');">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+              </form>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-header bg-white">
+    <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#historial-resueltos">
+      Historial de resueltos recientes
+    </button>
+  </div>
+  <div class="collapse" id="historial-resueltos">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-sm table-hover mb-0 align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>Artículo</th>
+              <th>Origen</th>
+              <th>Resuelto el</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% if (!resueltos.length) { %>
+            <tr><td colspan="3" class="text-center text-muted py-4">Sin faltantes resueltos.</td></tr>
+            <% } %>
+            <% resueltos.forEach(function (f) { %>
+            <tr>
+              <td><%= f.producto ? f.producto.nombre : f.descripcion %></td>
+              <td>
+                <% if (f.origen === 'peticion_cliente') { %>
+                  <span class="badge bg-info text-dark">Petición Cliente</span>
+                <% } else { %>
+                  <span class="badge bg-warning text-dark">Stock Bajo</span>
+                <% } %>
+              </td>
+              <td class="small text-muted"><%= new Date(f.updated_at).toLocaleString('es-MX') %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <%- include('../partials/layout-app-end') %>

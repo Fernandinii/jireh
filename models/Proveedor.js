@@ -1,5 +1,5 @@
 /**
- * Proveedor: datos de contacto; un proveedor tiene muchos productos.
+ * Proveedor de una empresa.
  */
 const { DataTypes } = require('sequelize');
 
@@ -8,9 +8,14 @@ module.exports = (sequelize) => {
     'Proveedor',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      empresa_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'empresas', key: 'id' },
       },
       nombre: {
         type: DataTypes.STRING(150),
@@ -22,7 +27,7 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
       telefono: {
-        type: DataTypes.STRING(40),
+        type: DataTypes.STRING(30),
         allowNull: true,
       },
       email: {
@@ -30,7 +35,7 @@ module.exports = (sequelize) => {
         allowNull: true,
       },
       direccion: {
-        type: DataTypes.STRING(255),
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       activo: {

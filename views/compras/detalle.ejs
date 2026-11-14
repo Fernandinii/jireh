@@ -1,0 +1,74 @@
+<%- include('../partials/layout-app-start', { title: 'Detalle de Compra', activeNav: 'compras', headerSubtitle: 'Partidas y costos' }) %>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h4 mb-0">Compra #<%= compra.id.slice(0, 8) %></h1>
+  <a href="/compras" class="btn btn-outline-secondary btn-sm">Volver</a>
+</div>
+
+<div class="card shadow-sm border-0 mb-3">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-3">
+        <div class="text-muted small text-uppercase">Proveedor</div>
+        <div class="fw-semibold"><%= compra.proveedor ? compra.proveedor.nombre : '—' %></div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-muted small text-uppercase">Fecha</div>
+        <div><%= new Date(compra.fecha_compra).toLocaleString('es-MX') %></div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-muted small text-uppercase">Folio / factura</div>
+        <div><code><%= compra.folio_factura || '—' %></code></div>
+      </div>
+      <div class="col-md-3">
+        <div class="text-muted small text-uppercase">Registró</div>
+        <div><%= compra.usuario ? (compra.usuario.nombre_completo || compra.usuario.nombre_usuario) : '—' %></div>
+      </div>
+      <% if (compra.notas) { %>
+      <div class="col-12">
+        <div class="text-muted small text-uppercase">Notas</div>
+        <div><%= compra.notas %></div>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm mb-0 align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Producto</th>
+            <th class="text-end">Cantidad</th>
+            <th class="text-end">Costo unitario</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% compra.detalles.forEach(function (d) {
+               var producto = d.producto;
+               var cantidad = producto && producto.es_granel ? Number(d.cantidad).toFixed(3) : String(Number(d.cantidad));
+               var unidad = producto ? (producto.unidad_medida || '') : '';
+          %>
+          <tr>
+            <td class="fw-semibold"><%= producto ? producto.nombre : 'Producto' %></td>
+            <td class="text-end"><%= cantidad %><%= producto && producto.es_granel && unidad ? ' ' + unidad : '' %></td>
+            <td class="text-end">$<%= Number(d.costo_unitario).toFixed(2) %></td>
+            <td class="text-end">$<%= Number(d.subtotal).toFixed(2) %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+        <tfoot>
+          <tr class="table-light">
+            <td colspan="3" class="text-end fw-bold">Total</td>
+            <td class="text-end fw-bold">$<%= Number(compra.total).toFixed(2) %></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/layout-app-end') %>

@@ -1,13 +1,16 @@
 <%#
   Parámetro: pagination = { page, perPage, total, totalPages, q }
   Parámetro: basePath = ruta base (ej. '/productos')
+  Parámetro (opcional): extraParams = { clave: valor } preservados en los enlaces
 %>
 <% const p = pagination || { page: 1, perPage: 25, total: 0, totalPages: 1, q: '' }; %>
+<% const extra = (typeof extraParams === 'object' && extraParams) || {}; %>
 <% function pagHref(pageNum) {
   const params = new URLSearchParams();
   if (p.q) params.set('q', p.q);
   params.set('perPage', String(p.perPage));
   params.set('page', String(pageNum));
+  for (const k in extra) { if (extra[k]) params.set(k, String(extra[k])); }
   return basePath + '?' + params.toString();
 } %>
 <% const windowSize = 5;

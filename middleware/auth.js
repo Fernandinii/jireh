@@ -4,7 +4,7 @@
 
 /** Redirige a login si no hay sesión */
 function requireAuth(req, res, next) {
-  if (!req.session.userId) {
+  if (!req.session.user) {
     req.session.flash = { error: 'Debe iniciar sesión para continuar' };
     return res.redirect('/login');
   }
@@ -12,16 +12,16 @@ function requireAuth(req, res, next) {
 }
 
 /**
- * Solo permite roles listados (p. ej. requireRole('administrador')).
+ * Solo permite roles listados (p. ej. requireRole('admin')).
  * Debe usarse después de requireAuth en la ruta.
  */
 function requireRole(...roles) {
   return (req, res, next) => {
-    if (!req.session.userId) {
+    if (!req.session.user) {
       req.session.flash = { error: 'Debe iniciar sesión' };
       return res.redirect('/login');
     }
-    if (!roles.includes(req.session.rol)) {
+    if (!roles.includes(req.session.user.rol)) {
       return res.status(403).render('errors/403', {
         title: 'Acceso denegado',
         message: 'No tiene permisos para ver esta sección.',

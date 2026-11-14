@@ -13,6 +13,8 @@ const { sequelize } = require('./database/connection');
 // Modelos primero (seed y rutas dependen de ellos)
 require('./models');
 const { ensureSeed } = require('./database/seed');
+const { iniciarSyncWorker, obtenerEstadoSync } = require('./services/syncWorker');
+const { requireAuth } = require('./middleware/auth');
 
 const authRoutes = require('./routes/auth');
 const dashboardRoutes = require('./routes/dashboard');
@@ -57,10 +59,9 @@ app.use(
 
 // Middleware para exponer usuario en vistas (se completará con auth)
 app.use((req, res, next) => {
-  res.locals.currentUser = req.session.userId
-    ? { id: req.session.userId, rol: req.session.rol, nombre: req.session.nombreUsuario }
-    : null;
+  res.locals.currentUser = req.session.user || null;
   res.locals.flash = req.session.flash || null;
+  res.locals.syncStatus = obtenerEstadoSync();
   delete req.session.flash;
   next();
 });
@@ -69,9 +70,14 @@ app.get('/health', (req, res) => {
   res.json({ ok: true, service: 'jireh-pos' });
 });
 
+// Estado de sincronización (para el badge en vivo del layout)
+app.get('/api/sync/status', requireAuth, (req, res) => {
+  res.json(obtenerEstadoSync());
+});
+
 // Raíz: sin sesión → login (no hay página de bienvenida pública)
 app.get('/', (req, res) => {
-  if (req.session.userId) return res.redirect('/dashboard');
+  if (req.session.user) return res.redirect('/dashboard');
   return res.redirect('/login');
 });
 
@@ -113,6 +119,7 @@ function startServer(port = 3000, host = '127.0.0.1') {
       .then(() => {
         const server = app.listen(port, host, () => {
           console.log(`Express escuchando en http://${host}:${port}`);
+          iniciarSyncWorker();
           resolve(server);
         });
         server.on('error', reject);

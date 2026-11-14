@@ -1,5 +1,6 @@
 /**
- * Producto: inventario y precios; opcionalmente ligado a un proveedor.
+ * Producto (catálogo). Los precios y stock viven en InventarioSucursal por sucursal.
+ * Soporta venta a granel mediante es_granel + unidad_medida.
  */
 const { DataTypes } = require('sequelize');
 
@@ -8,51 +9,51 @@ module.exports = (sequelize) => {
     'Producto',
     {
       id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true,
-        autoIncrement: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      empresa_id: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        references: { model: 'empresas', key: 'id' },
+      },
+      categoria_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: { model: 'categorias', key: 'id' },
+      },
+      codigo_barras: {
+        type: DataTypes.STRING(80),
+        allowNull: true,
       },
       nombre: {
         type: DataTypes.STRING(200),
         allowNull: false,
         validate: { notEmpty: { msg: 'El nombre es obligatorio' } },
       },
-      codigo_barras: {
-        type: DataTypes.STRING(80),
-        allowNull: true,
-        unique: { msg: 'El código de barras ya está registrado' },
-      },
-      precio_compra: {
-        type: DataTypes.DECIMAL(12, 2),
+      es_granel: {
+        type: DataTypes.BOOLEAN,
         allowNull: false,
-        defaultValue: 0,
-        validate: { min: { args: [0], msg: 'El precio de compra no puede ser negativo' } },
-      },
-      precio_venta: {
-        type: DataTypes.DECIMAL(12, 2),
-        allowNull: false,
-        defaultValue: 0,
-        validate: { min: { args: [0], msg: 'El precio de venta no puede ser negativo' } },
-      },
-      stock: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-        validate: { min: { args: [0], msg: 'El stock no puede ser negativo' } },
-      },
-      stock_minimo: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-        validate: { min: { args: [0], msg: 'El stock mínimo no puede ser negativo' } },
+        defaultValue: false,
       },
       unidad_medida: {
-        type: DataTypes.STRING(30),
+        type: DataTypes.STRING(20),
         allowNull: false,
         defaultValue: 'pieza',
       },
+      activo: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
     },
-    { tableName: 'productos' }
+    {
+      tableName: 'productos',
+      indexes: [
+        { unique: true, fields: ['empresa_id', 'codigo_barras'] },
+      ],
+    }
   );
 
   return Producto;

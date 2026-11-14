@@ -1,0 +1,44 @@
+<%- include('../partials/layout-app-start', { title: title, activeNav: activeNav, headerSubtitle: isEdit ? 'Editar proveedor' : 'Alta de proveedor' }) %>
+<%- include('../partials/flash') %>
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+  <h1 class="h4 mb-0"><%= title %></h1>
+  <a href="/proveedores" class="btn btn-outline-secondary btn-sm">Volver</a>
+</div>
+
+<% if (error) { %>
+  <div class="alert alert-danger"><%= error %></div>
+<% } %>
+
+<form action="<%= formAction %><%= isEdit ? '?_method=PUT' : '' %>" method="post" class="card shadow-sm border-0">
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label" for="nombre">Nombre *</label>
+        <input type="text" class="form-control" id="nombre" name="nombre" value="<%= proveedor.nombre || '' %>" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="contacto">Contacto</label>
+        <input type="text" class="form-control" id="contacto" name="contacto" value="<%= proveedor.contacto || '' %>" />
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="telefono">Teléfono</label>
+        <input type="text" class="form-control" id="telefono" name="telefono" value="<%= proveedor.telefono || '' %>" />
+      </div>
+      <div class="col-md-8">
+        <label class="form-label" for="email">Email</label>
+        <input type="email" class="form-control" id="email" name="email" value="<%= proveedor.email || '' %>" />
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="direccion">Dirección</label>
+        <textarea class="form-control" id="direccion" name="direccion" rows="2"><%= proveedor.direccion || '' %></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer bg-white d-flex gap-2">
+    <button type="submit" class="btn btn-primary"><%= isEdit ? 'Guardar cambios' : 'Crear proveedor' %></button>
+    <a href="/proveedores" class="btn btn-outline-secondary">Cancelar</a>
+  </div>
+</form>
+
+<%- include('../partials/layout-app-end') %>
